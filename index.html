@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#24245a">
+<title>Brújula Fénix Aventura</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.svg">
+<style>
+  :root { --bg:#24245a; --card:#33337a; --txt:#f8f19c; --mut:#c9c3e8; --acc:#f07a1a; --red:#d9534f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:system-ui,sans-serif; text-align:center; }
+  header { padding:20px 16px 0; }
+  header img { width:min(55vw,220px); height:auto; display:block; margin:auto; filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+  main { padding:12px 16px 32px; max-width:480px; margin:auto; }
+  .dial { position:relative; width:min(80vw,300px); aspect-ratio:1; margin:12px auto; }
+  .dial svg { width:100%; height:100%; transition:transform .15s linear; }
+  .pointer { position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:0; height:0;
+    border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid var(--acc); }
+  .heading { font-size:2.6rem; font-weight:700; margin:4px 0 0; }
+  .card { background:var(--card); border-radius:14px; padding:14px; margin-top:14px; }
+  .row { display:flex; justify-content:space-between; padding:4px 0; }
+  .row span:first-child { color:var(--mut); }
+  button { background:var(--acc); color:#24245a; border:0; border-radius:10px; padding:12px 16px; font-size:1rem; font-weight:600; width:100%; margin-top:8px; }
+  button.sec { background:transparent; color:var(--txt); border:1px solid var(--mut); }
+  .arrow { width:90px; height:90px; margin:8px auto; transition:transform .15s linear; }
+  .dist { font-size:1.8rem; font-weight:700; }
+  .msg { color:var(--mut); font-size:.85rem; margin-top:8px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.svg" alt="Fénix Aventura - Villa Regina">
+</header>
+<main>
+  <button id="start">Activar brújula y GPS</button>
+
+  <div class="dial">
+    <div class="pointer"></div>
+    <svg id="rosa" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="#33337a" stroke="#c9c3e8" stroke-width="2"/>
+      <g id="ticks"></g>
+      <polygon points="100,54 109,100 91,100" fill="#d9534f"/>
+      <polygon points="100,146 109,100 91,100" fill="#f8f19c"/>
+      <circle cx="100" cy="100" r="6" fill="#24245a"/>
+      <g font-size="16" font-weight="700" fill="#f8f19c" text-anchor="middle">
+        <text x="100" y="44" fill="#d9534f">N</text><text x="164" y="106">E</text>
+        <text x="100" y="170">S</text><text x="36" y="106">O</text>
+      </g>
+    </svg>
+  </div>
+  <p class="heading"><span id="grados">--</span>° <span id="punto"></span></p>
+  <p class="msg" id="msgBrujula"></p>
+
+  <div class="card">
+    <div class="row"><span>Latitud</span><span id="lat">--</span></div>
+    <div class="row"><span>Longitud</span><span id="lon">--</span></div>
+    <div class="row"><span>Altitud</span><span id="alt">--</span></div>
+    <div class="row"><span>Precisión</span><span id="prec">--</span></div>
+  </div>
+
+  <div class="card">
+    <div id="volver" class="hidden">
+      <div class="msg">Dirección al punto guardado</div>
+      <svg class="arrow" id="flecha" viewBox="0 0 100 100"><polygon points="50,5 80,90 50,70 20,90" fill="#f07a1a"/></svg>
+      <div class="dist" id="dist">--</div>
+      <div class="msg" id="guardadoInfo"></div>
+    </div>
+    <button id="guardar">Guardar este punto</button>
+    <button id="borrar" class="sec hidden">Borrar punto guardado</button>
+  </div>
+  <p class="msg">Funciona sin internet. Para que la brújula sea precisa, aleja el celular de objetos metálicos y si es necesario muévelo haciendo un "8".</p>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const PUNTOS = ['N','NE','E','SE','S','SO','O','NO'];
+let heading = null, pos = null;
+let destino = null;
+try { destino = JSON.parse(localStorage.getItem('destino')); } catch(e) {}
+
+// marcas de la rosa
+const ticks = $('ticks');
+for (let i = 0; i < 360; i += 10) {
+  const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+  const largo = i % 30 === 0 ? 10 : 5;
+  l.setAttribute('x1',100); l.setAttribute('y1',4); l.setAttribute('x2',100); l.setAttribute('y2',4+largo);
+  l.setAttribute('stroke','#c9c3e8'); l.setAttribute('stroke-width',2);
+  l.setAttribute('transform',`rotate(${i} 100 100)`);
+  ticks.appendChild(l);
+}
+
+const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+function distancia(a, b) {
+  const R = 6371000, dLat = rad(b.lat-a.lat), dLon = rad(b.lon-a.lon);
+  const h = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function rumbo(a, b) {
+  const y = Math.sin(rad(b.lon-a.lon)) * Math.cos(rad(b.lat));
+  const x = Math.cos(rad(a.lat))*Math.sin(rad(b.lat)) - Math.sin(rad(a.lat))*Math.cos(rad(b.lat))*Math.cos(rad(b.lon-a.lon));
+  return (deg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function render() {
+  if (heading !== null) {
+    $('rosa').style.transform = `rotate(${-heading}deg)`;
+    $('grados').textContent = Math.round(heading);
+    $('punto').textContent = PUNTOS[Math.round(heading / 45) % 8];
+  }
+  $('volver').classList.toggle('hidden', !destino);
+  $('borrar').classList.toggle('hidden', !destino);
+  if (destino) {
+    $('guardadoInfo').textContent = `Guardado: ${destino.lat.toFixed(5)}, ${destino.lon.toFixed(5)}`;
+    if (pos) {
+      const d = distancia(pos, destino);
+      $('dist').textContent = d < 1000 ? `${Math.round(d)} m` : `${(d/1000).toFixed(2)} km`;
+      const r = rumbo(pos, destino);
+      $('flecha').style.transform = `rotate(${r - (heading ?? 0)}deg)`;
+    }
+  }
+}
+
+function onOrient(e) {
+  let h = null;
+  if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;        // iPhone
+  else if (e.absolute && e.alpha !== null) h = 360 - e.alpha;                         // Android
+  if (h === null) return;
+  const ang = (screen.orientation && screen.orientation.angle) || 0;
+  heading = (h + ang + 360) % 360;
+  $('msgBrujula').textContent = '';
+  render();
+}
+
+async function iniciar() {
+  $('start').classList.add('hidden');
+  try {
+    if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
+      await DeviceOrientationEvent.requestPermission();
+    }
+  } catch(e) {}
+  if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', onOrient);
+  else window.addEventListener('deviceorientation', onOrient);
+  setTimeout(() => { if (heading === null) $('msgBrujula').textContent = 'Este celular no entrega datos de brújula.'; }, 3000);
+
+  if (!navigator.geolocation) { $('lat').textContent = 'Sin GPS'; return; }
+  navigator.geolocation.watchPosition(p => {
+    pos = { lat: p.coords.latitude, lon: p.coords.longitude };
+    $('lat').textContent = pos.lat.toFixed(5);
+    $('lon').textContent = pos.lon.toFixed(5);
+    $('alt').textContent = p.coords.altitude != null ? `${Math.round(p.coords.altitude)} m` : 'no disponible';
+    $('prec').textContent = `± ${Math.round(p.coords.accuracy)} m`;
+    render();
+  }, err => {
+    $('lat').textContent = err.code === 1 ? 'Permiso denegado' : 'Buscando señal…';
+  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 30000 });
+}
+
+$('start').onclick = iniciar;
+$('guardar').onclick = () => {
+  if (!pos) { alert('Espera a que el GPS encuentre tu ubicación.'); return; }
+  if (destino && !confirm('¿Reemplazar el punto guardado?')) return;
+  destino = { ...pos, t: Date.now() };
+  try { localStorage.setItem('destino', JSON.stringify(destino)); } catch(e) {}
+  render();
+};
+$('borrar').onclick = () => {
+  if (!confirm('¿Borrar el punto guardado?')) return;
+  destino = null;
+  try { localStorage.removeItem('destino'); } catch(e) {}
+  render();
+};
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "Brújula Fénix Aventura",
+  "short_name": "Brújula",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#24245a",
+  "theme_color": "#24245a",
+  "icons": [{ "src": "logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
