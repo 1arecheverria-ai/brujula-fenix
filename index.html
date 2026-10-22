@@ -11,54 +11,62 @@
   :root { --bg:#24245a; --card:#33337a; --txt:#f8f19c; --mut:#c9c3e8; --acc:#f07a1a; --red:#d9534f; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--txt); font-family:system-ui,sans-serif; text-align:center; }
-  header { padding:20px 16px 0; }
-  header img { width:min(55vw,220px); height:auto; display:block; margin:auto; filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
-  main { padding:12px 16px 32px; max-width:480px; margin:auto; }
-  .dial { position:relative; width:min(80vw,300px); aspect-ratio:1; margin:12px auto; }
-  .dial svg { width:100%; height:100%; transition:transform .15s linear; }
+  main { padding:16px 12px 24px; max-width:480px; margin:auto; }
+  .dial { position:relative; width:min(94vw,440px); aspect-ratio:1; margin:8px auto; }
+  .dial svg { width:100%; height:100%; }
+  #rosa { transition:transform .15s linear; transform-origin:100px 100px; }
   .pointer { position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:0; height:0;
     border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid var(--acc); }
-  .heading { font-size:2.6rem; font-weight:700; margin:4px 0 0; }
-  .card { background:var(--card); border-radius:14px; padding:14px; margin-top:14px; }
+  .heading { font-size:2.2rem; font-weight:700; margin:0; }
+  .card { background:var(--card); border-radius:12px; padding:8px 12px; margin-top:10px; }
   .row { display:flex; justify-content:space-between; padding:4px 0; }
   .row span:first-child { color:var(--mut); }
-  button { background:var(--acc); color:#24245a; border:0; border-radius:10px; padding:12px 16px; font-size:1rem; font-weight:600; width:100%; margin-top:8px; }
+  button { background:var(--acc); color:#24245a; border:0; border-radius:8px; padding:7px 12px; font-size:.85rem; font-weight:600; margin:4px 2px; }
+  .botones { display:flex; justify-content:center; flex-wrap:wrap; gap:4px; }
+  .datos { display:flex; justify-content:space-around; }
+  .datos div span { display:block; }
+  .datos .et { color:var(--mut); font-size:.75rem; }
   button.sec { background:transparent; color:var(--txt); border:1px solid var(--mut); }
-  .arrow { width:90px; height:90px; margin:8px auto; transition:transform .15s linear; }
-  .dist { font-size:1.8rem; font-weight:700; }
-  .msg { color:var(--mut); font-size:.85rem; margin-top:8px; }
+  .arrow { width:60px; height:60px; margin:4px auto; transition:transform .15s linear; }
+  .dist { font-size:1.4rem; font-weight:700; }
+  .msg { color:var(--mut); font-size:.75rem; margin-top:6px; }
   .hidden { display:none; }
 </style>
 </head>
 <body>
-<header>
-  <img src="logo.svg" alt="Fénix Aventura - Villa Regina">
-</header>
 <main>
-  <button id="start">Activar brújula y GPS</button>
+  <div class="botones"><button id="start">Activar brújula y GPS</button></div>
 
   <div class="dial">
     <div class="pointer"></div>
-    <svg id="rosa" viewBox="0 0 200 200">
-      <circle cx="100" cy="100" r="96" fill="#33337a" stroke="#c9c3e8" stroke-width="2"/>
-      <g id="ticks"></g>
-      <polygon points="100,54 109,100 91,100" fill="#d9534f"/>
-      <polygon points="100,146 109,100 91,100" fill="#f8f19c"/>
-      <circle cx="100" cy="100" r="6" fill="#24245a"/>
-      <g font-size="16" font-weight="700" fill="#f8f19c" text-anchor="middle">
-        <text x="100" y="44" fill="#d9534f">N</text><text x="164" y="106">E</text>
-        <text x="100" y="170">S</text><text x="36" y="106">O</text>
+    <svg viewBox="0 0 200 200">
+      <!-- logo fijo de fondo -->
+      <image href="logo.svg" x="20" y="20" width="160" height="160"/>
+      <g id="rosa">
+        <!-- anillo oscuro para que las letras contrasten -->
+        <circle cx="100" cy="100" r="89" fill="none" stroke="#24245a" stroke-width="20"/>
+        <circle cx="100" cy="100" r="99" fill="none" stroke="#c9c3e8" stroke-width="1.5"/>
+        <g id="ticks"></g>
+        <g font-size="15" font-weight="800" text-anchor="middle" dominant-baseline="central" font-family="system-ui,sans-serif">
+          <text x="100" y="11" fill="#ff5a4a">N</text>
+          <text x="189" y="100" fill="#f8f19c">E</text>
+          <text x="100" y="189" fill="#f8f19c">S</text>
+          <text x="11" y="100" fill="#f8f19c">O</text>
+        </g>
+        <g stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round">
+          <polygon points="100,40 109,100 91,100" fill="#d62828"/>
+          <polygon points="100,160 109,100 91,100" fill="#24245a"/>
+        </g>
+        <circle cx="100" cy="100" r="5" fill="#ffffff" stroke="#24245a" stroke-width="2"/>
       </g>
     </svg>
   </div>
   <p class="heading"><span id="grados">--</span>° <span id="punto"></span></p>
   <p class="msg" id="msgBrujula"></p>
 
-  <div class="card">
-    <div class="row"><span>Latitud</span><span id="lat">--</span></div>
-    <div class="row"><span>Longitud</span><span id="lon">--</span></div>
-    <div class="row"><span>Altitud</span><span id="alt">--</span></div>
-    <div class="row"><span>Precisión</span><span id="prec">--</span></div>
+  <div class="card datos">
+    <div><span class="et">Altitud</span><span id="alt">--</span></div>
+    <div><span class="et">Precisión GPS</span><span id="prec">--</span></div>
   </div>
 
   <div class="card">
@@ -68,10 +76,12 @@
       <div class="dist" id="dist">--</div>
       <div class="msg" id="guardadoInfo"></div>
     </div>
-    <button id="guardar">Guardar este punto</button>
-    <button id="borrar" class="sec hidden">Borrar punto guardado</button>
+    <div class="botones">
+      <button id="guardar">Guardar punto</button>
+      <button id="borrar" class="sec hidden">Borrar punto</button>
+    </div>
   </div>
-  <p class="msg">Funciona sin internet. Para que la brújula sea precisa, aleja el celular de objetos metálicos y si es necesario muévelo haciendo un "8".</p>
+  <p class="msg">Funciona sin internet. Para más precisión, aleja el celular de objetos metálicos y muévelo haciendo un "8".</p>
 </main>
 
 <script>
@@ -85,8 +95,9 @@ try { destino = JSON.parse(localStorage.getItem('destino')); } catch(e) {}
 const ticks = $('ticks');
 for (let i = 0; i < 360; i += 10) {
   const l = document.createElementNS('http://www.w3.org/2000/svg','line');
-  const largo = i % 30 === 0 ? 10 : 5;
-  l.setAttribute('x1',100); l.setAttribute('y1',4); l.setAttribute('x2',100); l.setAttribute('y2',4+largo);
+  if (i % 90 === 0) continue;
+  const largo = i % 30 === 0 ? 7 : 4;
+  l.setAttribute('x1',100); l.setAttribute('y1',1); l.setAttribute('x2',100); l.setAttribute('y2',1+largo);
   l.setAttribute('stroke','#c9c3e8'); l.setAttribute('stroke-width',2);
   l.setAttribute('transform',`rotate(${i} 100 100)`);
   ticks.appendChild(l);
@@ -113,7 +124,7 @@ function render() {
   $('volver').classList.toggle('hidden', !destino);
   $('borrar').classList.toggle('hidden', !destino);
   if (destino) {
-    $('guardadoInfo').textContent = `Guardado: ${destino.lat.toFixed(5)}, ${destino.lon.toFixed(5)}`;
+    $('guardadoInfo').textContent = 'Guardado ' + new Date(destino.t).toLocaleString('es-AR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
     if (pos) {
       const d = distancia(pos, destino);
       $('dist').textContent = d < 1000 ? `${Math.round(d)} m` : `${(d/1000).toFixed(2)} km`;
@@ -135,7 +146,7 @@ function onOrient(e) {
 }
 
 async function iniciar() {
-  $('start').classList.add('hidden');
+  $('start').parentElement.classList.add('hidden');
   try {
     if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
       await DeviceOrientationEvent.requestPermission();
@@ -145,16 +156,14 @@ async function iniciar() {
   else window.addEventListener('deviceorientation', onOrient);
   setTimeout(() => { if (heading === null) $('msgBrujula').textContent = 'Este celular no entrega datos de brújula.'; }, 3000);
 
-  if (!navigator.geolocation) { $('lat').textContent = 'Sin GPS'; return; }
+  if (!navigator.geolocation) { $('alt').textContent = 'Sin GPS'; return; }
   navigator.geolocation.watchPosition(p => {
     pos = { lat: p.coords.latitude, lon: p.coords.longitude };
-    $('lat').textContent = pos.lat.toFixed(5);
-    $('lon').textContent = pos.lon.toFixed(5);
     $('alt').textContent = p.coords.altitude != null ? `${Math.round(p.coords.altitude)} m` : 'no disponible';
     $('prec').textContent = `± ${Math.round(p.coords.accuracy)} m`;
     render();
   }, err => {
-    $('lat').textContent = err.code === 1 ? 'Permiso denegado' : 'Buscando señal…';
+    $('alt').textContent = err.code === 1 ? 'Permiso denegado' : 'Buscando señal…';
   }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 30000 });
 }
 
