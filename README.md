@@ -68,4 +68,4 @@ Listo: el punto queda guardado **aunque cierres la app o apagues la pantalla**.
 
 ---
 
-Dudas o problemas: consultá con el profe del grupo.
+Dudas o problemas: **Profe Gabriel Orozco – 📞 298-450-6202**
