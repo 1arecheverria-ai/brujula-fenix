@@ -30,8 +30,17 @@ App de brújula y GPS del grupo **Fénix Aventura – Villa Regina**.
 3. Tené el celular **horizontal, como una bandeja**, con la parte de arriba apuntando hacia adelante.
 4. Si la brújula marca raro, alejate de objetos metálicos (auto, bastones, cerco) y **mové el celular haciendo un "8"** en el aire unas veces.
 
+### ¿Cómo funciona? Brújula ≠ GPS
+La app usa **dos cosas distintas** del celular:
+
+- **Brújula = sensor magnético** (funciona como un imán). Detecta el campo magnético de la Tierra y dice **hacia dónde apunta el celular**, aunque estés quieto. Por eso **se desvía cerca de metales o imanes**: el auto, bastones, cercos de alambre, fundas con imán. El "8" en el aire sirve para recalibrar este sensor.
+- **GPS = satélites.** Dice **dónde estás** (coordenadas, altitud y distancia al punto guardado). No sabe hacia dónde mirás si estás quieto.
+
+💡 Al guardar el punto al lado del auto, **la ubicación se guarda bien**, pero ahí la brújula puede marcar mal por el metal. A unos metros del auto vuelve a funcionar normal.
+
 ### Qué muestra la pantalla
 - **Brújula:** la flecha naranja de arriba indica hacia dónde estás mirando. El número es el rumbo en grados (0° = Norte, 90° = Este, 180° = Sur, 270° = Oeste).
+- **Latitud y longitud:** tus coordenadas (sirven para pasarle tu ubicación exacta a alguien si hace falta).
 - **Altitud:** metros sobre el nivel del mar (según el GPS, puede variar ± unos metros).
 - **Precisión GPS:** cuánto se puede equivocar la ubicación. Cuanto más chico el número, mejor.
 
