@@ -25,7 +25,11 @@
   .botones { display:flex; justify-content:center; flex-wrap:wrap; gap:4px; }
   .datos { display:flex; justify-content:space-around; }
   .datos div span { display:block; }
-  .datos .et { color:var(--mut); font-size:.75rem; }
+  .datos { gap:4px; font-size:.85rem; }
+  .datos > div { flex:1; min-width:0; }
+  .datos .et { color:var(--mut); font-size:.68rem; }
+  .profe { font-size:.85rem; margin-top:10px; }
+  .profe a { color:var(--txt); font-weight:600; text-decoration:none; }
   button.sec { background:transparent; color:var(--txt); border:1px solid var(--mut); }
   .arrow { width:60px; height:60px; margin:4px auto; transition:transform .15s linear; }
   .dist { font-size:1.4rem; font-weight:700; }
@@ -65,8 +69,10 @@
   <p class="msg" id="msgBrujula"></p>
 
   <div class="card datos">
+    <div><span class="et">Latitud</span><span id="lat">--</span></div>
+    <div><span class="et">Longitud</span><span id="lon">--</span></div>
     <div><span class="et">Altitud</span><span id="alt">--</span></div>
-    <div><span class="et">Precisión GPS</span><span id="prec">--</span></div>
+    <div><span class="et">Precisión</span><span id="prec">--</span></div>
   </div>
 
   <div class="card">
@@ -81,6 +87,7 @@
       <button id="borrar" class="sec hidden">Borrar punto</button>
     </div>
   </div>
+  <p class="profe">Profe Gabriel Orozco · <a href="tel:+542984506202">📞 298-450-6202</a></p>
   <p class="msg">Funciona sin internet. Para más precisión, aleja el celular de objetos metálicos y muévelo haciendo un "8".</p>
 </main>
 
@@ -159,6 +166,8 @@ async function iniciar() {
   if (!navigator.geolocation) { $('alt').textContent = 'Sin GPS'; return; }
   navigator.geolocation.watchPosition(p => {
     pos = { lat: p.coords.latitude, lon: p.coords.longitude };
+    $('lat').textContent = pos.lat.toFixed(5);
+    $('lon').textContent = pos.lon.toFixed(5);
     $('alt').textContent = p.coords.altitude != null ? `${Math.round(p.coords.altitude)} m` : 'no disponible';
     $('prec').textContent = `± ${Math.round(p.coords.accuracy)} m`;
     render();
