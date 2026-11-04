@@ -44,6 +44,20 @@ La app usa **dos cosas distintas** del celular:
 - **Altitud:** metros sobre el nivel del mar (según el GPS, puede variar ± unos metros).
 - **Precisión GPS:** cuánto se puede equivocar la ubicación. Cuanto más chico el número, mejor.
 
+### Celulares sin brújula (modo GPS) 📡
+Algunos celulares viejos **no tienen sensor magnético**. En ese caso la app pasa sola al **modo GPS** y lo avisa debajo de los grados. En ese modo el rumbo sale de **hacia dónde caminás**, no de hacia dónde apunta el celular.
+
+**Para encontrar el norte:**
+1. Caminá **en línea recta 20–30 metros**, con el celular apuntando hacia adelante.
+2. **Parate sin girar** y mirá hacia dónde marca la **N**.
+3. Elegí una **referencia en esa dirección** (un cerro, un árbol, una piedra grande) y orientate con ella.
+
+**Tené en cuenta:**
+- **Quieto, el GPS no sabe hacia dónde mirás.** La app muestra el último rumbo de tu caminata ("⏸️ detenido"). Ese norte vale **mientras no gires**: si te das vuelta parado, la rosa no se mueve y queda mal. Para corregir, volvé a caminar unos metros.
+- Caminando despacio o con mala señal, el rumbo puede oscilar unos grados y tarda unos segundos en actualizarse.
+- En zigzag o terreno muy quebrado es menos confiable.
+- La **flecha para volver al auto** funciona igual, con las mismas limitaciones: seguila mientras caminás.
+
 ---
 
 ## 3. Punto fijo para volver al auto 🚗

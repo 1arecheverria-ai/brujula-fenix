@@ -34,6 +34,7 @@
   .arrow { width:60px; height:60px; margin:4px auto; transition:transform .15s linear; }
   .dist { font-size:1.4rem; font-weight:700; }
   .msg { color:var(--mut); font-size:.75rem; margin-top:6px; }
+  #msgBrujula { color:var(--txt); font-size:.85rem; margin:4px 0 0; }
   .hidden { display:none; }
 </style>
 </head>
@@ -95,6 +96,8 @@
 const $ = id => document.getElementById(id);
 const PUNTOS = ['N','NE','E','SE','S','SO','O','NO'];
 let heading = null, pos = null;
+// modo GPS: para celulares sin brújula, el rumbo sale de hacia dónde caminás
+let modoGPS = false, ancla = null, ultimoMov = 0;
 let destino = null;
 try { destino = JSON.parse(localStorage.getItem('destino')); } catch(e) {}
 
@@ -148,8 +151,29 @@ function onOrient(e) {
   if (h === null) return;
   const ang = (screen.orientation && screen.orientation.angle) || 0;
   heading = (h + ang + 360) % 360;
+  modoGPS = false;
   $('msgBrujula').textContent = '';
   render();
+}
+
+function rumboGPS(precision) {
+  if (!ancla) { ancla = pos; return; }
+  // solo se calcula el rumbo cuando el desplazamiento supera el error del GPS
+  const umbral = Math.max(8, Math.min(precision, 25));
+  if (distancia(ancla, pos) < umbral) return;
+  heading = rumbo(ancla, pos);
+  ancla = pos;
+  ultimoMov = Date.now();
+  estadoGPS();
+}
+
+function estadoGPS() {
+  if (!modoGPS) return;
+  let txt;
+  if (heading === null) txt = '📡 Modo GPS (este celular no tiene brújula): caminá en línea recta 20–30 m con el celular hacia adelante.';
+  else if (Date.now() - ultimoMov > 8000) txt = '⏸️ Modo GPS, detenido: el norte vale mientras no gires. Si girás, volvé a caminar.';
+  else txt = '🚶 Modo GPS: rumbo según tu caminata. Llevá el celular hacia adelante.';
+  $('msgBrujula').textContent = txt;
 }
 
 async function iniciar() {
@@ -161,15 +185,21 @@ async function iniciar() {
   } catch(e) {}
   if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', onOrient);
   else window.addEventListener('deviceorientation', onOrient);
-  setTimeout(() => { if (heading === null) $('msgBrujula').textContent = 'Este celular no entrega datos de brújula.'; }, 3000);
+  setTimeout(() => {
+    if (heading !== null) return;
+    modoGPS = true;
+    estadoGPS();
+    setInterval(estadoGPS, 2000);
+  }, 3000);
 
   if (!navigator.geolocation) { $('alt').textContent = 'Sin GPS'; return; }
   navigator.geolocation.watchPosition(p => {
     pos = { lat: p.coords.latitude, lon: p.coords.longitude };
     $('lat').textContent = pos.lat.toFixed(5);
     $('lon').textContent = pos.lon.toFixed(5);
-    $('alt').textContent = p.coords.altitude != null ? `${Math.round(p.coords.altitude)} m` : 'no disponible';
+    $('alt').textContent = p.coords.altitude != null ? `${Math.round(p.coords.altitude)} m` : '--';
     $('prec').textContent = `± ${Math.round(p.coords.accuracy)} m`;
+    if (modoGPS) rumboGPS(p.coords.accuracy);
     render();
   }, err => {
     $('alt').textContent = err.code === 1 ? 'Permiso denegado' : 'Buscando señal…';
