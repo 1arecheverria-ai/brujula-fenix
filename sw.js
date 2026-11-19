@@ -1,5 +1,5 @@
-const CACHE = 'brujula-v5';
-const FILES = ['./', 'index.html', 'manifest.json', 'icon.svg', 'logo.svg'];
+const CACHE = 'brujula-v6';
+const FILES = ['./', 'index.html', 'manifest.json', 'icon.svg', 'logo.svg', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(FILES.map(f => c.add(f).catch(() => {})))));
   self.skipWaiting();

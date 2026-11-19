@@ -7,6 +7,7 @@
 <title>Brújula Fénix Aventura</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="logo.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root { --bg:#24245a; --card:#33337a; --txt:#f8f19c; --mut:#c9c3e8; --acc:#f07a1a; --red:#d9534f; }
   * { box-sizing:border-box; }
@@ -36,6 +37,7 @@
   .msg { color:var(--mut); font-size:.75rem; margin-top:6px; }
   #msgBrujula { color:var(--txt); font-size:.85rem; margin:4px 0 0; }
   .hidden { display:none; }
+  #btnInstalar { background:#f8f19c; }
   #btnTuto { background:transparent; color:var(--txt); border:1px solid var(--acc); }
   .tuto { position:fixed; inset:0; background:rgba(10,10,40,.85); display:flex; align-items:center; justify-content:center; padding:12px; z-index:10; }
   .tuto .caja { background:var(--card); border-radius:14px; max-width:440px; width:100%; max-height:92vh; overflow-y:auto; padding:16px; text-align:left; color:#fff; }
@@ -51,7 +53,7 @@
 </head>
 <body>
 <main>
-  <div class="botones"><button id="start">Activar brújula y GPS</button><button id="btnTuto" class="hidden">📖 Tutorial</button></div>
+  <div class="botones"><button id="start">Activar brújula y GPS</button><button id="btnTuto" class="hidden">📖 Tutorial</button><button id="btnInstalar" class="hidden">📲 Instalar app</button></div>
 
   <div class="dial">
     <div class="pointer"></div>
@@ -104,6 +106,26 @@
 </main>
 
 <!-- Tutoriales: se muestra el que corresponde según el celular tenga brújula o no -->
+<div class="tuto hidden" id="tuto-instalar">
+  <div class="caja">
+    <h2>📲 Instalar la app</h2>
+    <p class="sub">Hacelo con internet. Después funciona sin señal.</p>
+    <h3 id="inst-android-t">Android (Chrome)</h3>
+    <ol id="inst-android">
+      <li>Tocá el menú <b>⋮</b> (arriba a la derecha).</li>
+      <li>Elegí <b>Instalar app</b> o <b>Agregar a pantalla principal</b>.</li>
+      <li>Abrila una vez desde el <b>ícono nuevo</b>.</li>
+    </ol>
+    <h3 id="inst-ios-t">iPhone (Safari)</h3>
+    <ol id="inst-ios">
+      <li>Tocá el botón <b>Compartir</b> (cuadrado con flecha hacia arriba).</li>
+      <li>Elegí <b>Agregar a inicio</b>.</li>
+      <li>Abrila una vez desde el <b>ícono nuevo</b>.</li>
+    </ol>
+    <button class="ok">Entendido</button>
+  </div>
+</div>
+
 <div class="tuto hidden" id="tuto-brujula">
   <div class="caja">
     <h2>📖 Cómo usar la app</h2>
@@ -324,6 +346,27 @@ $('borrar').onclick = () => {
   destino = null;
   try { localStorage.removeItem('destino'); } catch(e) {}
   render();
+};
+
+// botón Instalar app: solo cuando se abre desde el navegador (no instalada)
+let pedidoInstalar = null;
+const instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+if (!instalada) $('btnInstalar').classList.remove('hidden');
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalar = e; });
+window.addEventListener('appinstalled', () => { $('btnInstalar').classList.add('hidden'); pedidoInstalar = null; });
+$('btnInstalar').onclick = async () => {
+  if (pedidoInstalar) {
+    pedidoInstalar.prompt();
+    const r = await pedidoInstalar.userChoice;
+    if (r.outcome === 'accepted') $('btnInstalar').classList.add('hidden');
+    pedidoInstalar = null;
+    return;
+  }
+  // sin instalación automática: mostrar los pasos del celular que corresponde
+  ['inst-android-t','inst-android'].forEach(id => $(id).classList.toggle('hidden', esIOS));
+  ['inst-ios-t','inst-ios'].forEach(id => $(id).classList.toggle('hidden', !esIOS));
+  $('tuto-instalar').classList.remove('hidden');
 };
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
