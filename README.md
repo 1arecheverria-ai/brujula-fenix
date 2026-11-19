@@ -26,6 +26,7 @@ App de brújula y GPS del grupo **Fénix Aventura – Villa Regina**.
 ## 2. Primer uso
 
 1. Tocá **Activar brújula y GPS**.
+   La app detecta sola si tu celular tiene brújula o no, y **abre el tutorial que corresponde** la primera vez. Después lo podés volver a ver con el botón **📖 Tutorial**.
 2. Cuando el celular pregunte, **permití el acceso a la ubicación** (y en iPhone, también al movimiento).
 3. Tené el celular **horizontal, como una bandeja**, con la parte de arriba apuntando hacia adelante.
 4. Si la brújula marca raro, alejate de objetos metálicos (auto, bastones, cerco) y **mové el celular haciendo un "8"** en el aire unas veces.

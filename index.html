@@ -36,11 +36,22 @@
   .msg { color:var(--mut); font-size:.75rem; margin-top:6px; }
   #msgBrujula { color:var(--txt); font-size:.85rem; margin:4px 0 0; }
   .hidden { display:none; }
+  #btnTuto { background:transparent; color:var(--txt); border:1px solid var(--acc); }
+  .tuto { position:fixed; inset:0; background:rgba(10,10,40,.85); display:flex; align-items:center; justify-content:center; padding:12px; z-index:10; }
+  .tuto .caja { background:var(--card); border-radius:14px; max-width:440px; width:100%; max-height:92vh; overflow-y:auto; padding:16px; text-align:left; color:#fff; }
+  .tuto h2 { margin:0 0 4px; font-size:1.15rem; color:var(--txt); }
+  .tuto .sub { color:var(--mut); font-size:.8rem; margin:0 0 10px; }
+  .tuto h3 { margin:14px 0 6px; font-size:.95rem; color:var(--acc); }
+  .tuto ol, .tuto ul { margin:0; padding-left:20px; font-size:.88rem; line-height:1.4; }
+  .tuto li { margin-bottom:5px; }
+  .tuto b { color:var(--txt); }
+  .tuto.hidden { display:none; }
+  .tuto .ok { display:block; margin:14px auto 0; padding:9px 24px; font-size:.95rem; }
 </style>
 </head>
 <body>
 <main>
-  <div class="botones"><button id="start">Activar brújula y GPS</button></div>
+  <div class="botones"><button id="start">Activar brújula y GPS</button><button id="btnTuto" class="hidden">📖 Tutorial</button></div>
 
   <div class="dial">
     <div class="pointer"></div>
@@ -89,8 +100,79 @@
     </div>
   </div>
   <p class="profe">Profe Gabriel Orozco · <a href="tel:+542984506202">📞 298-450-6202</a></p>
-  <p class="msg">Funciona sin internet. Para más precisión, aleja el celular de objetos metálicos y muévelo haciendo un "8".</p>
+  <p class="msg" id="consejo">Funciona sin internet. Para más precisión, aleja el celular de objetos metálicos y muévelo haciendo un "8".</p>
 </main>
+
+<!-- Tutoriales: se muestra el que corresponde según el celular tenga brújula o no -->
+<div class="tuto hidden" id="tuto-brujula">
+  <div class="caja">
+    <h2>📖 Cómo usar la app</h2>
+    <p class="sub">Tu celular <b>tiene brújula</b> (sensor magnético).</p>
+    <h3>🧭 Encontrar el norte</h3>
+    <ol>
+      <li>Sostené el celular <b>horizontal, como una bandeja</b>, con la parte de arriba hacia adelante.</li>
+      <li>La <b>flecha naranja de arriba</b> es hacia donde mirás. La <b>N roja</b> marca el norte.</li>
+      <li>El número grande es el rumbo: 0° Norte, 90° Este, 180° Sur, 270° Oeste.</li>
+    </ol>
+    <h3>🧲 Si marca raro</h3>
+    <ul>
+      <li>La brújula es un <b>imán</b>: se desvía cerca del auto, bastones, cercos de alambre o fundas con imán. Alejate unos metros.</li>
+      <li>Mové el celular <b>haciendo un "8"</b> en el aire unas veces para calibrarla.</li>
+    </ul>
+    <h3>🚗 Volver al auto</h3>
+    <ol>
+      <li>Al llegar, parate al lado del auto y esperá que <b>Precisión</b> baje de 20 m.</li>
+      <li>Tocá <b>Guardar punto</b>. Queda guardado aunque cierres la app.</li>
+      <li>Para volver, seguí la <b>flecha naranja</b>: la distancia va bajando.</li>
+      <li>La flecha marca la <b>línea recta</b>, no el sendero: seguí siempre el camino seguro.</li>
+      <li>Al terminar, tocá <b>Borrar punto</b>.</li>
+    </ol>
+    <h3>🔋 Consejos</h3>
+    <ul>
+      <li>Funciona <b>sin señal</b> y en modo avión (con la ubicación activada).</li>
+      <li>El GPS gasta batería: cerrá la app cuando no la uses.</li>
+    </ul>
+    <button class="ok">Entendido</button>
+  </div>
+</div>
+
+<div class="tuto hidden" id="tuto-gps">
+  <div class="caja">
+    <h2>📖 Cómo usar la app</h2>
+    <p class="sub">Tu celular <b>no tiene brújula</b>: la app usa el <b>modo GPS</b>.</p>
+    <h3>📡 ¿Cómo funciona?</h3>
+    <ul>
+      <li>El rumbo sale de <b>hacia dónde caminás</b>, no de hacia dónde apunta el celular.</li>
+      <li><b>Quieto, el GPS no sabe hacia dónde mirás.</b></li>
+    </ul>
+    <h3>🧭 Encontrar el norte</h3>
+    <ol>
+      <li>Caminá <b>en línea recta 20–30 metros</b> con el celular apuntando hacia adelante.</li>
+      <li><b>Parate sin girar</b> y mirá hacia dónde marca la <b>N roja</b>.</li>
+      <li>Elegí una <b>referencia</b> en esa dirección (un cerro, un árbol, una piedra) y orientate con ella.</li>
+    </ol>
+    <h3>⏸️ Cuando estás quieto</h3>
+    <ul>
+      <li>La app muestra el <b>último rumbo</b> de tu caminata. Vale <b>mientras no gires</b>.</li>
+      <li>Si te das vuelta parado, la rosa no se mueve y queda mal: <b>volvé a caminar</b> unos metros.</li>
+      <li>Caminando despacio o en zigzag, el rumbo puede tardar o variar unos grados.</li>
+    </ul>
+    <h3>🚗 Volver al auto</h3>
+    <ol>
+      <li>Al llegar, parate al lado del auto y esperá que <b>Precisión</b> baje de 20 m.</li>
+      <li>Tocá <b>Guardar punto</b>. Queda guardado aunque cierres la app.</li>
+      <li>Para volver, <b>caminá</b> y seguí la <b>flecha naranja</b>: la distancia va bajando. Si la flecha no apunta bien, caminá unos metros más para que se actualice.</li>
+      <li>La flecha marca la <b>línea recta</b>, no el sendero: seguí siempre el camino seguro.</li>
+      <li>Al terminar, tocá <b>Borrar punto</b>.</li>
+    </ol>
+    <h3>🔋 Consejos</h3>
+    <ul>
+      <li>Funciona <b>sin señal</b> y en modo avión (con la ubicación activada).</li>
+      <li>El GPS gasta batería: cerrá la app cuando no la uses.</li>
+    </ul>
+    <button class="ok">Entendido</button>
+  </div>
+</div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -98,6 +180,7 @@ const PUNTOS = ['N','NE','E','SE','S','SO','O','NO'];
 let heading = null, pos = null;
 // modo GPS: para celulares sin brújula, el rumbo sale de hacia dónde caminás
 let modoGPS = false, ancla = null, ultimoMov = 0;
+let tipo = null;  // 'brujula' o 'gps', según lo que tenga el celular
 let destino = null;
 try { destino = JSON.parse(localStorage.getItem('destino')); } catch(e) {}
 
@@ -152,6 +235,7 @@ function onOrient(e) {
   const ang = (screen.orientation && screen.orientation.angle) || 0;
   heading = (h + ang + 360) % 360;
   modoGPS = false;
+  detectado('brujula');
   $('msgBrujula').textContent = '';
   render();
 }
@@ -176,8 +260,27 @@ function estadoGPS() {
   $('msgBrujula').textContent = txt;
 }
 
+// muestra el botón del tutorial que corresponde y lo abre solo la primera vez
+function detectado(t) {
+  if (tipo === t) return;
+  tipo = t;
+  $('btnTuto').textContent = t === 'brujula' ? '📖 Tutorial (con brújula)' : '📖 Tutorial (sin brújula)';
+  $('btnTuto').classList.remove('hidden');
+  $('consejo').textContent = t === 'brujula'
+    ? 'Funciona sin internet. Para más precisión, aleja el celular de objetos metálicos y muévelo haciendo un "8".'
+    : 'Funciona sin internet. Modo GPS: el rumbo se actualiza mientras caminás.';
+  let visto = false;
+  try { visto = localStorage.getItem('tutoVisto-' + t) === '1'; } catch(e) {}
+  if (!visto) {
+    abrirTuto();
+    try { localStorage.setItem('tutoVisto-' + t, '1'); } catch(e) {}
+  }
+}
+function abrirTuto() { if (tipo) $('tuto-' + tipo).classList.remove('hidden'); }
+document.querySelectorAll('.tuto .ok').forEach(b => b.onclick = () => b.closest('.tuto').classList.add('hidden'));
+
 async function iniciar() {
-  $('start').parentElement.classList.add('hidden');
+  $('start').classList.add('hidden');
   try {
     if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
       await DeviceOrientationEvent.requestPermission();
@@ -188,6 +291,7 @@ async function iniciar() {
   setTimeout(() => {
     if (heading !== null) return;
     modoGPS = true;
+    detectado('gps');
     estadoGPS();
     setInterval(estadoGPS, 2000);
   }, 3000);
@@ -207,6 +311,7 @@ async function iniciar() {
 }
 
 $('start').onclick = iniciar;
+$('btnTuto').onclick = abrirTuto;
 $('guardar').onclick = () => {
   if (!pos) { alert('Espera a que el GPS encuentre tu ubicación.'); return; }
   if (destino && !confirm('¿Reemplazar el punto guardado?')) return;
